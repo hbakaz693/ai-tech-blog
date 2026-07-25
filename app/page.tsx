@@ -39,6 +39,7 @@ export default function Home(): JSX.Element {
   const [selectedArticle, setSelectedArticle] = useState<DisplayArticle | null>(null);
   const [showAllArticles, setShowAllArticles] = useState<boolean>(false);
   const [selectedTag, setSelectedTag] = useState<string>("All");
+  const [showAds, setShowAds] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchArticles = async (): Promise<void> => {
@@ -80,32 +81,44 @@ export default function Home(): JSX.Element {
     fetchArticles();
   }, []);
 
-  // Charger le script d'ads après le montage du composant
+  // Charger le script d'ads uniquement quand showAds est true
   useEffect(() => {
-    const script = document.createElement('script');
-    script.async = true;
-    script.setAttribute('data-cfasync', 'false');
-    script.src = 'https://pl30529608.effectivecpmnetwork.com/eeb3a931b309a02ce3e3992a8ab39ca4/invoke.js';
-    document.body.appendChild(script);
+    let script: HTMLScriptElement | null = null;
+
+    if (showAds) {
+      script = document.createElement('script');
+      script.async = true;
+      script.setAttribute('data-cfasync', 'false');
+      script.src = 'https://pl30529608.effectivecpmnetwork.com/eeb3a931b309a02ce3e3992a8ab39ca4/invoke.js';
+      document.body.appendChild(script);
+    }
 
     return () => {
-      const scriptElement = document.querySelector('script[src="https://pl30529608.effectivecpmnetwork.com/eeb3a931b309a02ce3e3992a8ab39ca4/invoke.js"]');
-      if (scriptElement) {
-        document.body.removeChild(scriptElement);
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script);
       }
     };
-  }, []);
+  }, [showAds]);
 
   const tags = ["All", ...new Set(articles.map((a) => a.tag))];
   const filteredArticles = selectedTag === "All" ? articles : articles.filter((a) => a.tag === selectedTag);
   const displayedArticles = showAllArticles ? filteredArticles : filteredArticles.slice(0, 3);
 
-  const handleReadMore = (article: DisplayArticle): void => setSelectedArticle(article);
-  const closeArticleModal = (): void => setSelectedArticle(null);
+  const handleReadMore = (article: DisplayArticle): void => {
+    setSelectedArticle(article);
+    setShowAds(true);
+  };
+
+  const closeArticleModal = (): void => {
+    setSelectedArticle(null);
+    setShowAds(false);
+  };
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent): void => {
-      if (e.key === "Escape") closeArticleModal();
+      if (e.key === "Escape") {
+        closeArticleModal();
+      }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
@@ -235,10 +248,12 @@ export default function Home(): JSX.Element {
           )}
         </section>
 
-        {/* Zone publicitaire - entre les articles et le footer */}
-        <div className="px-8 py-6">
-          <div id="container-eeb3a931b309a02ce3e3992a8ab39ca4"></div>
-        </div>
+        {/* Zone publicitaire - visible uniquement quand showAds est true */}
+        {showAds && (
+          <div className="px-8 py-6 bg-gray-50 border-y border-gray-200">
+            <div id="container-eeb3a931b309a02ce3e3992a8ab39ca4"></div>
+          </div>
+        )}
 
         <footer className="flex items-center justify-between px-8 py-4 border-t border-gray-200 text-xs text-gray-400">
           <span>Copyright © Hicham Bakaz & Tech blog</span>
@@ -253,19 +268,30 @@ export default function Home(): JSX.Element {
       {selectedArticle && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" onClick={closeArticleModal}>
           <div className="bg-white rounded-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+            <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
               <div>
                 <span className="text-xs text-blue-600 font-medium bg-blue-50 px-2 py-0.5 rounded">{selectedArticle.tag}</span>
                 <span className="text-xs text-gray-400 ml-2">{selectedArticle.date}</span>
               </div>
               <button onClick={closeArticleModal} className="text-gray-400 hover:text-gray-600 text-xl transition-colors">✕</button>
             </div>
+            
             <div className="px-6 py-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">{selectedArticle.title}</h2>
               <div className="prose prose-sm max-w-none">
                 <div className="text-gray-600 leading-relaxed whitespace-pre-line">{selectedArticle.content}</div>
               </div>
             </div>
+
+            {/* Publicités dans le modal */}
+            {showAds && (
+              <div className="px-6 pb-6">
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                  <p className="text-xs text-gray-400 text-center mb-2">Sponsored Content</p>
+                  <div id="container-modal-eeb3a931b309a02ce3e3992a8ab39ca4"></div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
