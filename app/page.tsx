@@ -80,6 +80,22 @@ export default function Home(): JSX.Element {
     fetchArticles();
   }, []);
 
+  // Charger le script d'ads après le montage du composant
+  useEffect(() => {
+    const script = document.createElement('script');
+    script.async = true;
+    script.setAttribute('data-cfasync', 'false');
+    script.src = 'https://pl30529608.effectivecpmnetwork.com/eeb3a931b309a02ce3e3992a8ab39ca4/invoke.js';
+    document.body.appendChild(script);
+
+    return () => {
+      const scriptElement = document.querySelector('script[src="https://pl30529608.effectivecpmnetwork.com/eeb3a931b309a02ce3e3992a8ab39ca4/invoke.js"]');
+      if (scriptElement) {
+        document.body.removeChild(scriptElement);
+      }
+    };
+  }, []);
+
   const tags = ["All", ...new Set(articles.map((a) => a.tag))];
   const filteredArticles = selectedTag === "All" ? articles : articles.filter((a) => a.tag === selectedTag);
   const displayedArticles = showAllArticles ? filteredArticles : filteredArticles.slice(0, 3);
@@ -218,6 +234,11 @@ export default function Home(): JSX.Element {
             </div>
           )}
         </section>
+
+        {/* Zone publicitaire - entre les articles et le footer */}
+        <div className="px-8 py-6">
+          <div id="container-eeb3a931b309a02ce3e3992a8ab39ca4"></div>
+        </div>
 
         <footer className="flex items-center justify-between px-8 py-4 border-t border-gray-200 text-xs text-gray-400">
           <span>Copyright © Hicham Bakaz & Tech blog</span>
