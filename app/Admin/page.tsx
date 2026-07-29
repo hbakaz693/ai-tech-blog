@@ -159,6 +159,7 @@ export default function ArticlesDashboard() {
 
       if (error) throw error;
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const formattedArticles: Article[] = data.map((article: any) => ({
         ...article,
         status: article.published_at ? "Publié" : "Brouillon",
@@ -225,7 +226,8 @@ export default function ArticlesDashboard() {
       });
       setShowModal(false);
       await fetchArticles();
-    } catch (error: unknown) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       console.error("Error adding article:", error);
       
       // Afficher un message plus détaillé
