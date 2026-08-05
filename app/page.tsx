@@ -10,7 +10,7 @@ import TemplatesGrid from "./User/TemplatesGrid";
 import TemplateModal from "./User/TemplateModal";
 import SubmitTemplateModal from "./User/SubmitTemplateModal";
 import Footer from "./User/Footer";
-import { DisplayArticle, Template } from "./User/types/page";
+import { DisplayArticle,Template } from "./User/types";
 
 export default function HomePage() {
   const [articles, setArticles] = useState<DisplayArticle[]>([]);

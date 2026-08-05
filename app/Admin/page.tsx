@@ -8,7 +8,7 @@ import Topbar from "./Topbar";
 import StatsCards from "./StatsCards";
 import ArticlesTable from "./ArticlesTable";
 import ArticleModal from "./ArticleModal";
-import { Article,FormData } from "./types/page";
+import { Article,FormData } from "./types";
 
 export default function AdminPage() {
   const [articles, setArticles] = useState<Article[]>([]);
