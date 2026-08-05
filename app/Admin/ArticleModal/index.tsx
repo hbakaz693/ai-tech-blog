@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { FormData, Status, Article } from "../types/page";
+import { FormData,Status,Article } from "../types";
 
 interface ArticleModalProps {
   isOpen: boolean;
