@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Plus, Bell } from "lucide-react";
 import { supabase } from "@/app/lib/supabase";
-import Sidebar from "../Sidebar/page";
-import Topbar from "../Topbar/page";
-import TemplatesTable from "../TemplatesTable/page";
-import TemplateModal from "../TemplateModal/page";
+import Sidebar from "../Sidebar";
+import Topbar from "../Topbar";
+import TemplatesTable from "../TemplatesTable";
+import TemplateModal from "../TemplateModal";
 import { Template,TemplateFormData } from "../types";
 
 export default function TemplatesPage() {

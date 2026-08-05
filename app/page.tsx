@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "./lib/supabase";
-import Header from "./User/Header/page";
-import HeroSection from "./User/HeroSection/page";
-import ArticlesGrid from "./User/ArticlesGrid/page";
-import ArticleModal from "./User/ArticleModal/page";
-import TemplatesGrid from "./User/TemplatesGrid/page";
-import TemplateModal from "./User/TemplateModal/page";
-import SubmitTemplateModal from "./User/SubmitTemplateModal/page";
-import Footer from "./User/Footer/page";
+import Header from "./User/Header";
+import HeroSection from "./User/HeroSection";
+import ArticlesGrid from "./User/ArticlesGrid";
+import ArticleModal from "./User/ArticleModal";
+import TemplatesGrid from "./User/TemplatesGrid";
+import TemplateModal from "./User/TemplateModal";
+import SubmitTemplateModal from "./User/SubmitTemplateModal";
+import Footer from "./User/Footer";
 import { DisplayArticle, Template } from "./User/types/page";
 
 export default function HomePage() {

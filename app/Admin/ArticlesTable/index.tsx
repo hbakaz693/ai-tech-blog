@@ -11,7 +11,7 @@ import {
   FileText,
   X,
 } from "lucide-react";
-import StatusBadge from "../StatusBadge/page";
+import StatusBadge from "../StatusBadge";
 import { Article } from "../types/page";
 
 interface ArticlesTableProps {

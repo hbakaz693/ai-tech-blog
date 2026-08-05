@@ -3,11 +3,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
 import { supabase } from "../lib/supabase";
-import Sidebar from "./Sidebar/page";
-import Topbar from "./Topbar/page";
-import StatsCards from "./StatsCards/page";
-import ArticlesTable from "./ArticlesTable/page";
-import ArticleModal from "./ArticleModal/page";
+import Sidebar from "./Sidebar";
+import Topbar from "./Topbar";
+import StatsCards from "./StatsCards";
+import ArticlesTable from "./ArticlesTable";
+import ArticleModal from "./ArticleModal";
 import { Article,FormData } from "./types/page";
 
 export default function AdminPage() {

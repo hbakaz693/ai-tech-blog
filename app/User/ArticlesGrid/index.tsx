@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import ArticleCard from "../ArticleCard/page";
+import ArticleCard from "../ArticleCard";
 import { DisplayArticle } from "../types";
 
 interface ArticlesGridProps {

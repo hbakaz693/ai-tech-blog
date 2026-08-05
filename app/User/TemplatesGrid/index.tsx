@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Plus } from "lucide-react";
-import TemplateCard from "../TemplateCard/page";
+import TemplateCard from "../TemplateCard";
 import { Template } from "../types";
 interface TemplatesGridProps {
   templates: Template[];
