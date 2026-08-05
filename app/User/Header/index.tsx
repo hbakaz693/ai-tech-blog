@@ -12,9 +12,9 @@ export default function Header({ currentPage, onPageChange }: HeaderProps) {
     <header className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
-          IT
+          TM
         </div>
-        <span className="font-semibold text-gray-900">Done24</span>
+        <span className="font-semibold text-gray-900">Template Market</span>
       </div>
       <nav className="flex items-center gap-8">
         <button
