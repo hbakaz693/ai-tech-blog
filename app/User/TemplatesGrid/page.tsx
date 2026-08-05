@@ -3,8 +3,7 @@
 import React from "react";
 import { Plus } from "lucide-react";
 import TemplateCard from "../TemplateCard/page";
-import { Template } from "../types/page";
-
+import { Template } from "../types";
 interface TemplatesGridProps {
   templates: Template[];
   selectedCategory: string;

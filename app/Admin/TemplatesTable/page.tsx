@@ -17,7 +17,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
-import { Template } from "../types/page";
+import { Template } from "../types";
 
 interface TemplatesTableProps {
   templates: Template[];
@@ -49,6 +49,7 @@ export default function TemplatesTable({
   const [localSearchQuery, setLocalSearchQuery] = useState(searchQuery);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLocalSearchQuery(searchQuery);
   }, [searchQuery]);
 

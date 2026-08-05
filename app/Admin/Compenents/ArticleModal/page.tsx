@@ -35,11 +35,11 @@ export default function ArticleModal({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         id: articleToEdit.id,
-        title: articleToEdit.title || "",
-        slug: articleToEdit.slug || "",
-        category: articleToEdit.category || "",
-        status: articleToEdit.status || "Brouillon",
-        content: articleToEdit.content || "",
+        title: articleToEdit.title,
+        slug: articleToEdit.slug,
+        category: articleToEdit.category,
+        status: articleToEdit.status,
+        content: articleToEdit.content,
         excerpt: articleToEdit.excerpt || "",
         cover_image: articleToEdit.cover_image || "",
       });
@@ -57,10 +57,13 @@ export default function ArticleModal({
     }
   }, [articleToEdit, isOpen]);
 
-  // Reset du formulaire à la fermeture
-  useEffect(() => {
-    if (!isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (!isOpen) return null;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await onSubmit(formData);
+    // Reset form après soumission
+    if (!articleToEdit) {
       setFormData({
         id: undefined,
         title: "",
@@ -72,111 +75,52 @@ export default function ArticleModal({
         cover_image: "",
       });
     }
-  }, [isOpen]);
-
-  if (!isOpen) return null;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await onSubmit(formData);
-      // Reset form après soumission seulement si ce n'est pas une édition
-      if (!articleToEdit) {
-        setFormData({
-          id: undefined,
-          title: "",
-          slug: "",
-          category: "",
-          status: "Brouillon",
-          content: "",
-          excerpt: "",
-          cover_image: "",
-        });
-      }
-    } catch (error) {
-      console.error("Erreur lors de la soumission:", error);
-    }
-  };
-
-  // Générer automatiquement le slug à partir du titre
-  const generateSlug = (title: string) => {
-    return title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-  };
-
-  // Mettre à jour le slug automatiquement si vide
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setFormData({ 
-      ...formData, 
-      title,
-      slug: formData.slug || generateSlug(title)
-    });
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-      onClick={onClose}
-    >
-      <div 
-        className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900">
             {articleToEdit ? "Modifier l'article" : "Nouvel Article"}
           </h2>
-          <button 
-            onClick={onClose} 
-            className="text-gray-400 hover:text-gray-600 text-xl transition-colors"
-            type="button"
-          >
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">
             ✕
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Titre <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Titre *</label>
             <input
               type="text"
               required
               value={formData.title}
-              onChange={handleTitleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Titre de l'article"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Slug (URL)
-              <span className="text-xs text-gray-400 ml-2">(laissé vide pour auto-génération)</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Slug (URL)</label>
             <input
               type="text"
               value={formData.slug}
               onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
-              placeholder="mon-article-slug"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="mon-article-slug (laissé vide pour auto-génération)"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Catégorie <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Catégorie *</label>
             <input
               type="text"
               required
               value={formData.category}
               onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="Ex: Technologie, Productivité"
             />
           </div>
@@ -186,21 +130,19 @@ export default function ArticleModal({
             <textarea
               value={formData.excerpt}
               onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={2}
               placeholder="Résumé de l'article"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Contenu <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Contenu *</label>
             <textarea
               required
               value={formData.content}
               onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow resize-none"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               rows={6}
               placeholder="Contenu de l'article..."
             />
@@ -212,7 +154,7 @@ export default function ArticleModal({
               type="url"
               value={formData.cover_image}
               onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="https://example.com/image.jpg"
             />
           </div>
@@ -222,7 +164,7 @@ export default function ArticleModal({
             <select
               value={formData.status}
               onChange={(e) => setFormData({ ...formData, status: e.target.value as Status })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-shadow"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="Brouillon">Brouillon</option>
               <option value="Publié">Publié</option>
@@ -230,11 +172,7 @@ export default function ArticleModal({
           </div>
 
           <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
-            >
+            <button type="button" onClick={onClose} className="px-4 py-2 text-gray-600 hover:text-gray-800">
               Annuler
             </button>
             <button

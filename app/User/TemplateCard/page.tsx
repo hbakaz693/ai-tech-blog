@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Eye, Clock, CheckCircle } from "lucide-react";
-import { Template } from "../types/page";
+import { Template } from "../types";
 
 interface TemplateCardProps {
   template: Template;

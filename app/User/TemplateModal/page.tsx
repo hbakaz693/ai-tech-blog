@@ -2,7 +2,7 @@
 
 import React from "react";
 import { X, Clock, CheckCircle, ShoppingCart, Euro } from "lucide-react";
-import { Template } from "../types/page";
+import { Template } from "../types";
 
 interface TemplateModalProps {
   template: Template | null;

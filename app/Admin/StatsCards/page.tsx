@@ -18,6 +18,7 @@ export default function StatsCards({ total, published, drafts, categories }: Sta
     { label: "Catégories", value: categories, icon: FolderOpen, color: "purple" },
   ];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const colors: any = {
     blue: "bg-blue-50 text-blue-500",
     emerald: "bg-emerald-50 text-emerald-500",

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { DisplayArticle } from "../types/page";
+import { DisplayArticle } from "../types";
 
 interface ArticleModalProps {
   article: DisplayArticle | null;

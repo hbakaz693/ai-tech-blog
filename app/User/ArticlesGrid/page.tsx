@@ -2,7 +2,7 @@
 
 import React from "react";
 import ArticleCard from "../ArticleCard/page";
-import { DisplayArticle } from "../types/page";
+import { DisplayArticle } from "../types";
 
 interface ArticlesGridProps {
   articles: DisplayArticle[];

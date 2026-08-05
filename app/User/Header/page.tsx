@@ -14,7 +14,7 @@ export default function Header({ currentPage, onPageChange }: HeaderProps) {
         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
           IT
         </div>
-        <span className="font-semibold text-gray-900">IA&Tech</span>
+        <span className="font-semibold text-gray-900">Done24</span>
       </div>
       <nav className="flex items-center gap-8">
         <button

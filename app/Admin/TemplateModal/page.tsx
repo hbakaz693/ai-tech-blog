@@ -35,6 +35,7 @@ export default function TemplateModal({
 
   useEffect(() => {
     if (templateToEdit) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         id: templateToEdit.id,
         title: templateToEdit.title || "",
@@ -69,6 +70,7 @@ export default function TemplateModal({
   // Réinitialiser le formulaire à la fermeture
   useEffect(() => {
     if (!isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         title: "",
         slug: "",

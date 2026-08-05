@@ -7,7 +7,7 @@ import Sidebar from "../Sidebar/page";
 import Topbar from "../Topbar/page";
 import TemplatesTable from "../TemplatesTable/page";
 import TemplateModal from "../TemplateModal/page";
-import { Template, TemplateFormData } from "@/app/User/types/page";
+import { Template,TemplateFormData } from "../types";
 
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([]);
