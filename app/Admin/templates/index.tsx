@@ -19,6 +19,7 @@ export default function TemplatesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [templateToEdit, setTemplateToEdit] = useState<Template | null>(null);
   const [pendingCount, setPendingCount] = useState(0);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const templatesPerPage = 5;

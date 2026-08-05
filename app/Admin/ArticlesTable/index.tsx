@@ -12,7 +12,7 @@ import {
   X,
 } from "lucide-react";
 import StatusBadge from "../StatusBadge";
-import { Article } from "../types/page";
+import { Article } from "../types";
 
 interface ArticlesTableProps {
   articles: Article[];

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
-import { Template, TemplateFormData } from "../types/page";
+import { Template,TemplateFormData } from "../types";
 
 interface TemplateModalProps {
   isOpen: boolean;
