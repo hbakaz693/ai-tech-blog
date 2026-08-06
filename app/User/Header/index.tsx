@@ -37,7 +37,6 @@ export default function Header({ currentPage, onPageChange }: HeaderProps) {
         >
           🛒 Boutique
         </button>
-        <span className="text-gray-500 text-sm hover:text-gray-700 cursor-pointer">Articles</span>
       </nav>
     </header>
   );
