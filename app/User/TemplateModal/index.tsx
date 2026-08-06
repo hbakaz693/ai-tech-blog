@@ -121,7 +121,8 @@ export default function TemplateModal({ template, onClose }: TemplateModalProps)
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">Prêt à commander ?</h3>
                 <p className="text-sm text-gray-600 mt-2">
-                  Contactez-nous directement sur WhatsApp pour finaliser votre commande.
+                  🛠️ Besoin d&apos;adapter ce template à votre profil ?
+Contactez le créateur pour demander une personnalisation.
                 </p>
               </div>
 
@@ -159,7 +160,7 @@ export default function TemplateModal({ template, onClose }: TemplateModalProps)
                 >
                   <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
                 </svg>
-                Commander via WhatsApp
+              Demander une personnalisation
               </button>
 
               <p className="text-xs text-gray-400 text-center mt-4">

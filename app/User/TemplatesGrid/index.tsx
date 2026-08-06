@@ -55,7 +55,7 @@ export default function TemplatesGrid({
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
           >
             <Plus size={16} />
-            Proposer un template
+            Vendre un template
           </button>
           <div className="flex gap-2 flex-wrap">
             {categories.map((category) => (
