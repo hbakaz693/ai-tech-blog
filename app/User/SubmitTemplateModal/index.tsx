@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { X, Upload, User, Mail, Phone, FileText } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { X, Upload, User, Mail, Phone, FileText, Image, Trash2 } from "lucide-react";
 import { supabase } from "@/app/lib/supabase";
+
 interface SubmitTemplateModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -15,8 +16,6 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
     description: "",
     full_description: "",
     category: "",
-    cover_image: "",
-    preview_images: "",
     features: "",
     delivery_time: "",
     price: 0,
@@ -24,11 +23,90 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
     submitted_email: "",
     submitted_phone: "",
   });
+  
+  const [coverImage, setCoverImage] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string>("");
+  const [previewImages, setPreviewImages] = useState<File[]>([]);
+  const [previewImagesPreviews, setPreviewImagesPreviews] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  
+  const coverInputRef = useRef<HTMLInputElement>(null);
+  const previewInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
+
+  // Upload d'une image vers Supabase Storage
+  const uploadImage = async (file: File, folder: string): Promise<string | null> => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      const filePath = `${folder}/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('templates')
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("❌ Erreur upload:", uploadError);
+        throw uploadError;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('templates')
+        .getPublicUrl(filePath);
+
+      return publicUrl;
+    } catch (error) {
+      console.error("❌ Erreur upload image:", error);
+      return null;
+    }
+  };
+
+  // Gestion de l'image de couverture
+  const handleCoverImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCoverImage(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  // Gestion des images de prévisualisation
+  const handlePreviewImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setPreviewImages(prev => [...prev, ...files]);
+      
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setPreviewImagesPreviews(prev => [...prev, reader.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  // Supprimer une image de prévisualisation
+  const removePreviewImage = (index: number) => {
+    setPreviewImages(prev => prev.filter((_, i) => i !== index));
+    setPreviewImagesPreviews(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Supprimer l'image de couverture
+  const removeCoverImage = () => {
+    setCoverImage(null);
+    setCoverImagePreview("");
+    if (coverInputRef.current) {
+      coverInputRef.current.value = "";
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,14 +122,33 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
         return;
       }
 
+      if (!coverImage) {
+        setErrorMessage("Veuillez sélectionner une image de couverture.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Upload de l'image de couverture
+      const coverImageUrl = await uploadImage(coverImage, 'covers');
+      if (!coverImageUrl) {
+        setErrorMessage("Erreur lors de l'upload de l'image de couverture.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Upload des images de prévisualisation
+      const previewImageUrls: string[] = [];
+      for (const file of previewImages) {
+        const url = await uploadImage(file, 'previews');
+        if (url) {
+          previewImageUrls.push(url);
+        }
+      }
+
       const slug = formData.title
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "");
-
-      const previewImages = formData.preview_images
-        ? formData.preview_images.split(",").map((s) => s.trim()).filter(Boolean)
-        : [];
 
       const newTemplate = {
         title: formData.title.trim(),
@@ -59,8 +156,8 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
         description: formData.description.trim(),
         full_description: formData.full_description?.trim() || null,
         category: formData.category.trim(),
-        cover_image: formData.cover_image?.trim() || null,
-        preview_images: previewImages.length > 0 ? previewImages : null,
+        cover_image: coverImageUrl,
+        preview_images: previewImageUrls.length > 0 ? previewImageUrls : null,
         features: formData.features?.trim() || null,
         delivery_time: formData.delivery_time?.trim() || null,
         price: Number(formData.price) || 0,
@@ -74,19 +171,6 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
 
       console.log("📝 Envoi du template:", JSON.stringify(newTemplate, null, 2));
 
-      // Vérifier d'abord si la table existe
-      const { error: checkError } = await supabase
-        .from("templates")
-        .select("id")
-        .limit(1);
-
-      if (checkError) {
-        console.error("❌ Table templates inexistante:", checkError);
-        setErrorMessage("La table templates n'existe pas. Contactez l'administrateur.");
-        setSubmitting(false);
-        return;
-      }
-
       const { data, error } = await supabase
         .from("templates")
         .insert([newTemplate])
@@ -94,37 +178,12 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
 
       if (error) {
         console.error("❌ Erreur Supabase:", error);
-        
-        if (error.code === '42P01') {
-          setErrorMessage("La table templates n'existe pas. Contactez l'administrateur.");
-        } else if (error.code === '42501') {
-          setErrorMessage("Erreur de permission. Contactez l'administrateur.");
-        } else if (error.code === '23505') {
-          setErrorMessage("Un template avec ce titre existe déjà.");
-        } else {
-          setErrorMessage(`Erreur: ${error.message}`);
-        }
+        setErrorMessage(`Erreur: ${error.message}`);
         setSubmitting(false);
         return;
       }
 
       console.log("✅ Template soumis:", data);
-
-      // Créer une notification
-      if (data && data[0]) {
-        try {
-          await supabase
-            .from("template_notifications")
-            .insert([{
-              template_id: data[0].id,
-              type: "submission",
-              message: `Nouveau template soumis par ${formData.submitted_by}`,
-            }]);
-        } catch (notifError) {
-          console.warn("⚠️ Erreur notification (non bloquante):", notifError);
-        }
-      }
-
       setSuccess(true);
       onSuccess();
 
@@ -135,8 +194,6 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
           description: "",
           full_description: "",
           category: "",
-          cover_image: "",
-          preview_images: "",
           features: "",
           delivery_time: "",
           price: 0,
@@ -144,6 +201,10 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
           submitted_email: "",
           submitted_phone: "",
         });
+        setCoverImage(null);
+        setCoverImagePreview("");
+        setPreviewImages([]);
+        setPreviewImagesPreviews([]);
         onClose();
       }, 3000);
     } catch (error: any) {
@@ -296,28 +357,93 @@ export default function SubmitTemplateModal({ isOpen, onClose, onSuccess }: Subm
                 />
               </div>
 
+              {/* Upload Image de couverture */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">URL de l'image</label>
-                <input
-                  type="url"
-                  value={formData.cover_image}
-                  onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/cover.jpg"
-                />
+                <label className="block text-sm font-medium text-gray-700 mb-1">Image de couverture *</label>
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => coverInputRef.current?.click()}
+                    className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors flex items-center gap-2"
+                  >
+                    <Image size={20} />
+                    Choisir une image
+                  </button>
+                  <input
+                    ref={coverInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCoverImageChange}
+                    className="hidden"
+                  />
+                  {coverImage && (
+                    <span className="text-sm text-gray-600">{coverImage.name}</span>
+                  )}
+                </div>
+                {coverImagePreview && (
+                  <div className="mt-2 relative inline-block">
+                    <img
+                      src={coverImagePreview}
+                      alt="Cover preview"
+                      className="h-32 w-auto rounded-lg object-cover border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeCoverImage}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                )}
               </div>
 
+              {/* Upload Images de prévisualisation */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Images (séparées par des virgules)
+                  Images de prévisualisation
                 </label>
-                <input
-                  type="text"
-                  value={formData.preview_images}
-                  onChange={(e) => setFormData({ ...formData, preview_images: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                  placeholder="image1.jpg, image2.jpg"
-                />
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => previewInputRef.current?.click()}
+                    className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors flex items-center gap-2"
+                  >
+                    <Image size={20} />
+                    Choisir des images
+                  </button>
+                  <input
+                    ref={previewInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handlePreviewImagesChange}
+                    className="hidden"
+                  />
+                  {previewImages.length > 0 && (
+                    <span className="text-sm text-gray-600">{previewImages.length} image(s)</span>
+                  )}
+                </div>
+                {previewImagesPreviews.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {previewImagesPreviews.map((preview, index) => (
+                      <div key={index} className="relative inline-block">
+                        <img
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                          className="h-20 w-20 rounded-lg object-cover border border-gray-200"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removePreviewImage(index)}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div>
