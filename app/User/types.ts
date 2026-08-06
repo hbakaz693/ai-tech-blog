@@ -10,6 +10,7 @@ export interface DisplayArticle {
   content: string;
   cover_image: string | null;
   status: "Publié";
+
 }
 
 // ============ TYPES POUR LES TEMPLATES (UTILISATEUR) ============
@@ -33,6 +34,8 @@ export interface Template {
   submitted_phone: string | null;
   created_at: string;
   updated_at: string;
+  rating?: number;
+  reviews_count?: number;
 }
 
 export interface TemplateFormData {
@@ -55,4 +58,15 @@ export interface OrderFormData {
   customer_email: string;
   customer_phone: string;
   customer_message: string;
+}
+
+export interface Review {
+  id: string;
+  template_id: string;
+  user_name: string;
+  user_avatar?: string;
+  rating: number;
+  comment: string;
+  likes: number;
+  created_at: string;
 }
