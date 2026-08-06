@@ -16,7 +16,7 @@ export default function TemplateModal({ template, onClose }: TemplateModalProps)
 
   // Fonction pour ouvrir WhatsApp
   const openWhatsApp = () => {
-    const phoneNumber = "06386206"; // Numéro de téléphone
+    const phoneNumber = "+212 638620619"; // Numéro de téléphone
     const message = `Bonjour, je souhaite commander le template "${template.title}" au prix de ${template.price.toFixed(2)} €.`;
     const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
     window.open(url, '_blank');
